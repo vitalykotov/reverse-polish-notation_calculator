@@ -121,4 +121,11 @@ public class RPNEvaluatorTest {
         double result = RPNEvaluator.calc(expr);
         assertEquals(3.0, result, 1e-9, "Empty tokens should be ignored, leaving last number in stack");
     }
+    @Test
+    void testDemonstrateFailure() {
+        String[] tokens = {"2", "+", "3"};
+        List<String> result = RPNEvaluator.trans(tokens, pri);
+        assertEquals(List.of("2", "3", "+", "ERROR"), result,
+                "Этот тест должен упасть - в ожидании лишний элемент 'ERROR'");
+    }
 }
