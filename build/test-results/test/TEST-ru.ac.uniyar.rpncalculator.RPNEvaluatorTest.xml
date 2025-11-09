@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ru.ac.uniyar.rpncalculator.RPNEvaluatorTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2025-11-09T20:30:24" hostname="DESKTOP-IKI1O1U" time="0.031">
+  <properties/>
+  <testcase name="testExecuteOperations()" classname="ru.ac.uniyar.rpncalculator.RPNEvaluatorTest" time="0.025"/>
+  <testcase name="testCalcVariousExpressions()" classname="ru.ac.uniyar.rpncalculator.RPNEvaluatorTest" time="0.002"/>
+  <testcase name="testTransVariousExpressions()" classname="ru.ac.uniyar.rpncalculator.RPNEvaluatorTest" time="0.001"/>
+  <testcase name="testFullIntegrationExamples()" classname="ru.ac.uniyar.rpncalculator.RPNEvaluatorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

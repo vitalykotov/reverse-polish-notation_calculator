@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'pmd'
+}
+
+group 'ru.ac.uniyar.testingcourse'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+pmd {
+    toolVersion = '6.55.0'
+}
+dependencies {
+    testImplementation(platform('org.junit:junit-bom:5.8.2'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation('org.assertj:assertj-core:3.22.0')
+}
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'BRANCH'       // Проверка именно ветвевого покрытия
+                value = 'COVEREDRATIO'  // Доля покрытия
+                minimum = 0.90          // Минимум 90%
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+
+test {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+}
+
+javadoc {
+	options.encoding = 'UTF-8'
+}
