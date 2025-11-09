@@ -59,70 +59,66 @@ public class RPNEvaluatorTest {
     @Test
     public void testCalcVariousExpressions() {
         // Basic arithmetic
-        assertEquals(4.0, RPNEvaluator.Calc(List.of("2", "2", "+")), 1e-9);
-        assertEquals(2.0, RPNEvaluator.Calc(List.of("5", "3", "-")), 1e-9);
-        assertEquals(15.0, RPNEvaluator.Calc(List.of("3", "5", "*")), 1e-9);
-        assertEquals(2.0, RPNEvaluator.Calc(List.of("10", "5", "/")), 1e-9);
-        assertEquals(8.0, RPNEvaluator.Calc(List.of("2", "3", "^")), 1e-9);
+        assertEquals(4.0, RPNEvaluator.calc(List.of("2", "2", "+")), 1e-9);
+        assertEquals(2.0, RPNEvaluator.calc(List.of("5", "3", "-")), 1e-9);
+        assertEquals(15.0, RPNEvaluator.calc(List.of("3", "5", "*")), 1e-9);
+        assertEquals(2.0, RPNEvaluator.calc(List.of("10", "5", "/")), 1e-9);
+        assertEquals(8.0, RPNEvaluator.calc(List.of("2", "3", "^")), 1e-9);
 
 
-        assertEquals(-5.0, RPNEvaluator.Calc(List.of("5", "~")), 1e-9);
-        assertEquals(-9.0, RPNEvaluator.Calc(List.of("1", "2", "+", "3", "~", "*")), 1e-9);
+        assertEquals(-5.0, RPNEvaluator.calc(List.of("5", "~")), 1e-9);
+        assertEquals(-9.0, RPNEvaluator.calc(List.of("1", "2", "+", "3", "~", "*")), 1e-9);
 
 
-        assertEquals(7.0, RPNEvaluator.Calc(List.of("7")), 1e-9);
-        assertEquals(0.0, RPNEvaluator.Calc(Collections.emptyList()), 1e-9);
+        assertEquals(7.0, RPNEvaluator.calc(List.of("7")), 1e-9);
+        assertEquals(0.0, RPNEvaluator.calc(Collections.emptyList()), 1e-9);
 
 
-        assertEquals(0.0, RPNEvaluator.Calc(List.of("~")), 1e-9);
-        assertEquals(0.0, RPNEvaluator.Calc(List.of("+")), 1e-9);
-        assertEquals(3.0, RPNEvaluator.Calc(List.of("5", "3", "abc")), 1e-9);
-        assertEquals(3.0, RPNEvaluator.Calc(List.of("5", "3", "$")), 1e-9);
-        assertEquals(3.0, RPNEvaluator.Calc(List.of("5", "", "3")), 1e-9);
+        assertEquals(0.0, RPNEvaluator.calc(List.of("~")), 1e-9);
+        assertEquals(0.0, RPNEvaluator.calc(List.of("+")), 1e-9);
+
     }
 
 
-    @Test
-    public void testExecuteOperations() {
-        assertEquals(5.0, RPNEvaluator.Execute('+', 2, 3), 1e-9);
-        assertEquals(-1.0, RPNEvaluator.Execute('-', 2, 3), 1e-9);
-        assertEquals(6.0, RPNEvaluator.Execute('*', 2, 3), 1e-9);
-        assertEquals(2.5, RPNEvaluator.Execute('/', 5, 2), 1e-9);
-        assertEquals(8.0, RPNEvaluator.Execute('^', 2, 3), 1e-9);
-        assertEquals(0.0, RPNEvaluator.Execute('$', 2, 3), 1e-9);
-        assertEquals(Double.POSITIVE_INFINITY, RPNEvaluator.Execute('/', 5, 0), 1e-9);
-    }
 
 
     @Test
     public void testFullIntegrationExamples() {
         String expr1 = "( 25 + 4 ) * ~ 2";
         List<String> postfix1 = RPNEvaluator.trans(expr1.split(" "), pri);
-        assertEquals(-58.0, RPNEvaluator.Calc(postfix1), 1e-9);
+        assertEquals(-58.0, RPNEvaluator.calc(postfix1), 1e-9);
 
         String expr2 = "2 + 3 * 4 ^ 2";
         List<String> postfix2 = RPNEvaluator.trans(expr2.split(" "), pri);
-        assertEquals(50.0, RPNEvaluator.Calc(postfix2), 1e-9);
+        assertEquals(50.0, RPNEvaluator.calc(postfix2), 1e-9);
 
         String expr3 = "~ 5 + ~ 3";
         List<String> postfix3 = RPNEvaluator.trans(expr3.split(" "), pri);
-        assertEquals(-8.0, RPNEvaluator.Calc(postfix3), 1e-9);
+        assertEquals(-8.0, RPNEvaluator.calc(postfix3), 1e-9);
     }
 
-//    @Test
-//    public void testMainMethodRunsWithoutException() {
-//        RPNEvaluator.main(new String[0]);
-//    }
+    @Test
+    public void testCalcThrowsExceptionForUnknownOperator() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            RPNEvaluator.calc(List.of("5", "3", "$"));
+        });
 
+        assertThrows(IllegalArgumentException.class, () -> {
+            RPNEvaluator.calc(List.of("2", "4", "#"));
+        });
+    }
 
+    @Test
+    public void testCalcWithMultiCharToken() {
+        List<String> expr = Arrays.asList("5", "3", "abc");
+        double result = RPNEvaluator.calc(expr);
+        assertEquals(3.0, result, 1e-9, "Multi-character tokens should be ignored, leaving last number in stack");
+    }
 
-
-
-
-
-
-
-
-
-
+    @Test
+    public void testCalcWithEmptyStringToken() {
+        List<String> expr = Arrays.asList("5", "", "3");
+        double result = RPNEvaluator.calc(expr);
+        assertEquals(3.0, result, 1e-9, "Empty tokens should be ignored, leaving last number in stack");
+    }
 }

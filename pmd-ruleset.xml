@@ -2,11 +2,8 @@
 <ruleset name="RPN Calculator Rules">
 
     <description>PMD rules for RPN Calculator</description>
-
-    <rule ref="category/java/bestpractices.xml/UnusedImports"/>
-    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
-    <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
-
-    <rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
-    <rule ref="category/java/errorprone.xml/AvoidCatchingGenericException"/>
+    <exclude-pattern>.*Test\.java</exclude-pattern>
+    <exclude-pattern>.*Tests\.java</exclude-pattern>
+    <rule ref="category/java/bestpractices.xml"/>
+    <rule ref="category/java/codestyle.xml"/>
 </ruleset>

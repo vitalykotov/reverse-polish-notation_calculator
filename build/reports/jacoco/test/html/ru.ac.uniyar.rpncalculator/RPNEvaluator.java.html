@@ -1,120 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RPNEvaluator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">reverse-polish-notation-evaluator</a> &gt; <a href="index.source.html" class="el_package">ru.ac.uniyar.rpncalculator</a> &gt; <span class="el_source">RPNEvaluator.java</span></div><h1>RPNEvaluator.java</h1><pre class="source lang-java linenums">package ru.ac.uniyar.rpncalculator;
 
-import java.util.*;
-import java.util.regex.Matcher;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-<span class="fc" id="L7">public class RPNEvaluator {</span>
+<span class="fc" id="L10">public class RPNEvaluator {</span>
     private static final char UNARY_MINUS = '~';
-
+    private static final String NUMBER_PATTERN = &quot;[0-9]+&quot;;
+    private static final int SINGLE_CHAR = 1;
     // Метод преобразования инфиксного выражения в постфиксное
-    public static List&lt;String&gt; trans(String[] a, HashMap&lt;Character, Integer&gt; pri) {
-<span class="fc" id="L12">        Stack&lt;String&gt; stack = new Stack&lt;&gt;();</span>
-<span class="fc" id="L13">        List&lt;String&gt; ans = new ArrayList&lt;&gt;();</span>
+    public static List&lt;String&gt; trans(final String[] tokens, final Map&lt;Character, Integer&gt; priorityMap) {
+<span class="fc" id="L16">        final Deque&lt;String&gt; stack = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L17">        final List&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (String token : a) {</span>
-
-
-<span class="fc bfc" id="L18" title="All 2 branches covered.">            if (Pattern.matches(&quot;[0-9]+&quot;, token)) {</span>
-<span class="fc" id="L19">                ans.add(token);</span>
-            }
-<span class="fc bfc" id="L21" title="All 2 branches covered.">            else if (token.equals(&quot;(&quot;)) { // открывающая скобка — в стек</span>
-<span class="fc" id="L22">                stack.push(token);</span>
-<span class="fc bfc" id="L23" title="All 2 branches covered.">            } else if (token.equals(&quot;)&quot;)) { // закрывающая — выгрузить до открывающей</span>
-<span class="fc bfc" id="L24" title="All 4 branches covered.">                while (!stack.isEmpty() &amp;&amp; !stack.peek().equals(&quot;(&quot;)) {</span>
-<span class="fc" id="L25">                    ans.add(stack.pop());</span>
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        for (final String token : tokens) {</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">            if (Pattern.matches(NUMBER_PATTERN, token)) {</span>
+<span class="fc" id="L21">                result.add(token);</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">            } else if (&quot;(&quot;.equals(token)) { // открывающая скобка — в стек</span>
+<span class="fc" id="L23">                stack.push(token);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">            } else if (&quot;)&quot;.equals(token)) { // закрывающая — выгрузить до открывающей</span>
+<span class="fc bfc" id="L25" title="All 4 branches covered.">                while (!stack.isEmpty() &amp;&amp; !&quot;(&quot;.equals(stack.peek())) {</span>
+<span class="fc" id="L26">                    result.add(stack.pop());</span>
                 }
-<span class="fc bfc" id="L27" title="All 2 branches covered.">                if (!stack.isEmpty()) {</span>
-<span class="fc" id="L28">                    stack.pop(); // удалить &quot;(&quot; из стека</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">                if (!stack.isEmpty()) {</span>
+<span class="fc" id="L29">                    stack.pop(); // удалить &quot;(&quot; из стека</span>
                 }
-
-
-
             } else { // оператор
-<span class="fc bfc" id="L34" title="All 2 branches covered.">                while (!stack.isEmpty()</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">                        &amp;&amp; pri.get(stack.peek().charAt(0)) &gt;= pri.get(token.charAt(0))) {</span>
-<span class="fc" id="L36">                    ans.add(stack.pop());</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">                while (!stack.isEmpty()</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">                        &amp;&amp; priorityMap.get(stack.peek().charAt(0)) &gt;= priorityMap.get(token.charAt(0))) {</span>
+<span class="fc" id="L34">                    result.add(stack.pop());</span>
                 }
-<span class="fc" id="L38">                stack.push(token);</span>
+<span class="fc" id="L36">                stack.push(token);</span>
             }
         }
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
-<span class="fc" id="L43">            ans.add(stack.pop());</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
+<span class="fc" id="L41">            result.add(stack.pop());</span>
         }
 
-<span class="fc" id="L46">        return ans;</span>
+<span class="fc" id="L44">        return result;</span>
     }
 
     // Метод для вычисления результата постфиксного выражения
-    public static double Calc(List&lt;String&gt; postfixExpr) {
-<span class="fc" id="L51">        Stack&lt;Double&gt; locals = new Stack&lt;&gt;();</span>
+    public static double calc(final List&lt;String&gt; postfixExpression) {
+<span class="fc" id="L49">        final Deque&lt;Double&gt; stack = new ArrayDeque&lt;&gt;();</span>
 
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (final String token : postfixExpression) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (token.matches(NUMBER_PATTERN)) {</span>
+<span class="fc" id="L53">                stack.push(Double.parseDouble(token));</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">            } else if (token.length() == SINGLE_CHAR ) {</span>
+<span class="fc" id="L55">                final char operator = token.charAt(0);</span>
 
-
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (int i = 0; i &lt; postfixExpr.size(); i++) {</span>
-<span class="fc" id="L56">            String token = postfixExpr.get(i);</span>
-
-<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (token.matches(&quot;[0-9]+&quot;)) {</span>
-<span class="fc" id="L59">                locals.push(Double.parseDouble(token));</span>
-<span class="fc bfc" id="L60" title="All 4 branches covered.">            } else if (token.length() == 1 &amp;&amp; &quot;+-*/^~&quot;.indexOf(token.charAt(0)) != -1) {</span>
-
-<span class="fc" id="L62">                char c = token.charAt(0);</span>
-
-<span class="fc bfc" id="L64" title="All 2 branches covered.">                if (c == UNARY_MINUS) { // унарный минус</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">                    double last = locals.isEmpty() ? 0 : locals.pop();</span>
-<span class="fc" id="L66">                    double result = Execute('-', 0, last);</span>
-<span class="fc" id="L67">                    locals.push(result);</span>
-
-<span class="fc" id="L69">                    continue;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">                if (operator == UNARY_MINUS) { // унарный минус</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">                    final double operand = stack.isEmpty() ? 0 : stack.pop();</span>
+<span class="fc" id="L59">                    final double unaryResult = execute('-', 0, operand);</span>
+<span class="fc" id="L60">                    stack.push(unaryResult);</span>
+<span class="fc" id="L61">                } else {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">                    final double secondOperand = stack.isEmpty() ? 0 : stack.pop();</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                    final double firstOperand = stack.isEmpty() ? 0 : stack.pop();</span>
+<span class="fc" id="L64">                    final double binaryResult = execute(operator, firstOperand, secondOperand);</span>
+<span class="fc" id="L65">                    stack.push(binaryResult);</span>
                 }
-
-<span class="fc bfc" id="L72" title="All 2 branches covered.">                double second = locals.isEmpty() ? 0 : locals.pop();</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">                double first = locals.isEmpty() ? 0 : locals.pop();</span>
-<span class="fc" id="L74">                double result = Execute(c, first, second);</span>
-<span class="fc" id="L75">                locals.push(result);</span>
-
             }
-        }
+<span class="fc" id="L68">        }</span>
 
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        return locals.isEmpty() ? 0 : locals.pop();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        return stack.isEmpty() ? 0 : stack.pop();</span>
     }
 
     // Метод выполнения операции
-    static double Execute(char op, double first, double second) {
-<span class="fc bfc" id="L85" title="All 6 branches covered.">        switch (op) {</span>
+    private static double execute(final char operator, final double firstOperand, final double secondOperand) {
+        double result;
+<span class="fc bfc" id="L76" title="All 6 branches covered.">        switch (operator) {</span>
             case '+':
-<span class="fc" id="L87">                return first + second;</span>
+<span class="fc" id="L78">                result = firstOperand + secondOperand;</span>
+<span class="fc" id="L79">                break;</span>
             case '-':
-<span class="fc" id="L89">                return first - second;</span>
+<span class="fc" id="L81">                result = firstOperand - secondOperand;</span>
+<span class="fc" id="L82">                break;</span>
             case '*':
-<span class="fc" id="L91">                return first * second;</span>
+<span class="fc" id="L84">                result = firstOperand * secondOperand;</span>
+<span class="fc" id="L85">                break;</span>
             case '/':
-<span class="fc" id="L93">                return first / second;</span>
+<span class="fc" id="L87">                result = firstOperand / secondOperand;</span>
+<span class="fc" id="L88">                break;</span>
             case '^':
-<span class="fc" id="L95">                return Math.pow(first, second);</span>
+<span class="fc" id="L90">                result = Math.pow(firstOperand, secondOperand);</span>
+<span class="fc" id="L91">                break;</span>
             default:
-<span class="fc" id="L97">                return 0;</span>
+<span class="fc" id="L93">                throw new IllegalArgumentException(&quot;Unknown operator: &quot; + operator);</span>
         }
+
+<span class="fc" id="L96">        return result;</span>
     }
-//    public static void main(String[] args) {
-//        HashMap&lt;Character, Integer&gt; pri = new HashMap&lt;&gt;();
-//        pri.put('(', 0);
-//        pri.put('+', 1);
-//        pri.put('-', 1);
-//        pri.put('*', 2);
-//        pri.put('/', 2);
-//        pri.put('^', 3);
-//        pri.put('~', 4);
-//
-//        Scanner sc = new Scanner(System.in);
-//        // System.out.println(&quot;Введите выражение, разделённое пробелами:&quot;);
-//        String ren = &quot;( 25 + 4 ) * ~ 2&quot;;
-//        String[] res = ren.split(&quot; &quot;);
-//        List&lt;String&gt; ans = trans(res, pri);
-//        System.out.println(&quot;Постфиксное выражение: &quot; + ans);
-//        double result = Calc(ans);
-//        System.out.println(&quot;Результат: &quot; + result);
-//    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
