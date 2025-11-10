@@ -25,37 +25,38 @@ public class RPNEvaluatorTest {
         pri.put('~', 4);
     }
 
-
+    /**
+     * Тестирование преобразования различных выражений в обратную польскую нотацию.
+     * Проверяет числа без операций, операции с разными приоритетами, скобки, унарный минус,
+     * пустые и некорректные выражения.
+     */
     @Test
     public void testTransVariousExpressions() {
         // Numbers only
         assertEquals(List.of("1", "2", "3"), RPNEvaluator.trans(new String[]{"1", "2", "3"}, pri));
-
 
         assertEquals(List.of("1", "2", "+"), RPNEvaluator.trans(new String[]{"(", "1", "+", "2", ")"}, pri));
         assertEquals(List.of("1", "2", "3", "*", "+"), RPNEvaluator.trans(new String[]{"1", "+", "2", "*", "3"}, pri));
         assertEquals(List.of("1", "2", "+", "3", "-"), RPNEvaluator.trans(new String[]{"1", "+", "2", "-", "3"}, pri));
         assertEquals(List.of("2", "3", "^"), RPNEvaluator.trans(new String[]{"2", "^", "3"}, pri));
 
-
         assertEquals(List.of("5", "~"), RPNEvaluator.trans(new String[]{"~", "5"}, pri));
-
 
         assertEquals(List.of("1", "2", "+", "3", "~", "*"), RPNEvaluator.trans(new String[]{"(", "1", "+", "2", ")", "*", "~", "3"}, pri));
 
-
         assertEquals(List.of("1", "2", "+", "3", "*"), RPNEvaluator.trans(new String[]{"(", "(", "1", "+", "2", ")", "*", "3", ")"}, pri));
-
 
         assertEquals(Collections.emptyList(), RPNEvaluator.trans(new String[]{}, pri));
         assertEquals(Collections.emptyList(), RPNEvaluator.trans(new String[]{")"}, pri));
-
 
         assertEquals(List.of("1", "2", "+"), RPNEvaluator.trans(new String[]{"+", "1", "2"}, pri));
         assertEquals(List.of("1", "2", "$"), RPNEvaluator.trans(new String[]{"1", "2", "$"}, pri));
     }
 
-
+    /**
+     * Тестирование вычисления различных выражений в обратной польской нотации.
+     * Проверяются базовые арифметические операции, степень, унарный минус, а также случаи с пустым списком и некорректными операторами.
+     */
     @Test
     public void testCalcVariousExpressions() {
         // Basic arithmetic
@@ -65,23 +66,20 @@ public class RPNEvaluatorTest {
         assertEquals(2.0, RPNEvaluator.calc(List.of("10", "5", "/")), 1e-9);
         assertEquals(8.0, RPNEvaluator.calc(List.of("2", "3", "^")), 1e-9);
 
-
         assertEquals(-5.0, RPNEvaluator.calc(List.of("5", "~")), 1e-9);
         assertEquals(-9.0, RPNEvaluator.calc(List.of("1", "2", "+", "3", "~", "*")), 1e-9);
-
 
         assertEquals(7.0, RPNEvaluator.calc(List.of("7")), 1e-9);
         assertEquals(0.0, RPNEvaluator.calc(Collections.emptyList()), 1e-9);
 
-
         assertEquals(0.0, RPNEvaluator.calc(List.of("~")), 1e-9);
         assertEquals(0.0, RPNEvaluator.calc(List.of("+")), 1e-9);
-
     }
 
-
-
-
+    /**
+     * Тесты полной интеграции: сначала преобразование инфиксного выражения в ОПН, затем вычисление результата.
+     * Сценарии включают унарный минус, различные уровни приоритетов и степени.
+     */
     @Test
     public void testFullIntegrationExamples() {
         String expr1 = "( 25 + 4 ) * ~ 2";
@@ -97,6 +95,9 @@ public class RPNEvaluatorTest {
         assertEquals(-8.0, RPNEvaluator.calc(postfix3), 1e-9);
     }
 
+    /**
+     * Проверка генерации исключения IllegalArgumentException при попытке вычислить выражение с неизвестным оператором.
+     */
     @Test
     public void testCalcThrowsExceptionForUnknownOperator() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -108,6 +109,10 @@ public class RPNEvaluatorTest {
         });
     }
 
+    /**
+     * Проверка обработки выражения, содержащего токены с несколькими символами.
+     * В данном случае такие токены игнорируются, и вычисляется результат по последнему числу.
+     */
     @Test
     public void testCalcWithMultiCharToken() {
         List<String> expr = Arrays.asList("5", "3", "abc");
@@ -115,17 +120,27 @@ public class RPNEvaluatorTest {
         assertEquals(3.0, result, 1e-9, "Multi-character tokens should be ignored, leaving last number in stack");
     }
 
+    /**
+     * Проверка обработки выражения с пустыми токенами.
+     * Пустые токены игнорируются, вычисляется результат по последнему числу.
+     */
     @Test
     public void testCalcWithEmptyStringToken() {
         List<String> expr = Arrays.asList("5", "", "3");
         double result = RPNEvaluator.calc(expr);
         assertEquals(3.0, result, 1e-9, "Empty tokens should be ignored, leaving last number in stack");
     }
+
+    /**
+     * Демонстрация падающего теста: преобразование выражения и ожидание неправильного результата.
+     * Тест ожидает неудачу из-за лишнего элемента 'ERROR'.
+     */
     @Test
     void testDemonstrateFailure() {
         String[] tokens = {"2", "+", "3"};
         List<String> result = RPNEvaluator.trans(tokens, pri);
-        assertEquals(List.of("2", "3", "+"), result,
+        assertEquals(List.of("2", "3", "+","ERROR"), result,
                 "Этот тест должен упасть - в ожидании лишний элемент 'ERROR'");
     }
 }
+
