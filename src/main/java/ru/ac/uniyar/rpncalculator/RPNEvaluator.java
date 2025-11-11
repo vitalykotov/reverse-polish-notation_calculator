@@ -15,13 +15,14 @@ public class RPNEvaluator {
     public static List<String> trans(final String[] tokens, final Map<Character, Integer> priorityMap) {
         final Deque<String> stack = new ArrayDeque<>();
         final List<String> result = new ArrayList<>();
-
+       // System.out.print("выражение ");
+       // System.out.println(List.of(tokens));
         for (final String token : tokens) {
             if (Pattern.matches(NUMBER_PATTERN, token)) {
                 result.add(token);
-            } else if ("(".equals(token)) { // открывающая скобка — в стек
+            } else if ("(".equals(token)) { // открывающая скобка - в стек
                 stack.push(token);
-            } else if (")".equals(token)) { // закрывающая — выгрузить до открывающей
+            } else if (")".equals(token)) { // закрывающая - выгрузить до открывающей
                 while (!stack.isEmpty() && !"(".equals(stack.peek())) {
                     result.add(stack.pop());
                 }
@@ -40,7 +41,8 @@ public class RPNEvaluator {
         while (!stack.isEmpty()) {
             result.add(stack.pop());
         }
-
+        //System.out.print("опз ");
+       // System.out.println(result);
         return result;
     }
 
@@ -62,11 +64,11 @@ public class RPNEvaluator {
                     final double secondOperand = stack.isEmpty() ? 0 : stack.pop();
                     final double firstOperand = stack.isEmpty() ? 0 : stack.pop();
                     final double binaryResult = execute(operator, firstOperand, secondOperand);
+                    // System.out.println(String.format("%f %s %f = %f", firstOperand, operator, secondOperand, binaryResult));
                     stack.push(binaryResult);
                 }
             }
         }
-
         return stack.isEmpty() ? 0 : stack.pop();
     }
 

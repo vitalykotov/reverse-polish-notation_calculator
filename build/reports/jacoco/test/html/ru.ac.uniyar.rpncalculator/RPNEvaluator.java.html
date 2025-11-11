@@ -19,9 +19,9 @@ import java.util.regex.Pattern;
 <span class="fc bfc" id="L19" title="All 2 branches covered.">        for (final String token : tokens) {</span>
 <span class="fc bfc" id="L20" title="All 2 branches covered.">            if (Pattern.matches(NUMBER_PATTERN, token)) {</span>
 <span class="fc" id="L21">                result.add(token);</span>
-<span class="fc bfc" id="L22" title="All 2 branches covered.">            } else if (&quot;(&quot;.equals(token)) { // открывающая скобка — в стек</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">            } else if (&quot;(&quot;.equals(token)) { // открывающая скобка - в стек</span>
 <span class="fc" id="L23">                stack.push(token);</span>
-<span class="fc bfc" id="L24" title="All 2 branches covered.">            } else if (&quot;)&quot;.equals(token)) { // закрывающая — выгрузить до открывающей</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">            } else if (&quot;)&quot;.equals(token)) { // закрывающая - выгрузить до открывающей</span>
 <span class="fc bfc" id="L25" title="All 4 branches covered.">                while (!stack.isEmpty() &amp;&amp; !&quot;(&quot;.equals(stack.peek())) {</span>
 <span class="fc" id="L26">                    result.add(stack.pop());</span>
                 }
