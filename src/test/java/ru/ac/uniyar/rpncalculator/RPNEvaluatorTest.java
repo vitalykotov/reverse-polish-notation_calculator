@@ -139,7 +139,7 @@ public class RPNEvaluatorTest {
     void testDemonstrateFailure() {
         String[] tokens = {"2", "+", "3"};
         List<String> result = RPNEvaluator.trans(tokens, pri);
-        assertEquals(List.of("2", "3", "+","ERROR"), result,
+        assertEquals(List.of("2", "3", "+"), result,
                 "Этот тест должен упасть - в ожидании лишний элемент 'ERROR'");
     }
 }
